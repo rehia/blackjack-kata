@@ -1,6 +1,6 @@
 module Model where
 
-data CardValue
+data Card
   = Ace
   | King
   | Queen
@@ -14,62 +14,26 @@ data CardValue
   | Four
   | Three
   | Two
-  deriving (Show, Eq)
-
-cardPoints :: CardValue -> Int
-cardPoints Ace = 11
-cardPoints King = 10
-cardPoints Queen = 10
-cardPoints Jack = 10
-cardPoints Ten = 10
-cardPoints Nine = 9
-cardPoints Eight = 8
-cardPoints Seven = 7
-cardPoints Six = 6
-cardPoints Five = 5
-cardPoints Four = 4
-cardPoints Three = 3
-cardPoints Two = 2
-
-hardCardPoints :: CardValue -> Int
-hardCardPoints Ace = 1
-hardCardPoints value = cardPoints value
-
-cardValues :: [CardValue]
-cardValues =
-  [ Ace
-  , King
-  , Queen
-  , Jack
-  , Ten
-  , Nine
-  , Eight
-  , Seven
-  , Six
-  , Five
-  , Four
-  , Three
-  , Two
-  ]
-
-data Color
-  = Hearts
-  | Clubs
-  | Diamonds
-  | Spades
-  deriving (Show, Eq)
-
-colors :: [Color]
-colors = [ Hearts, Clubs, Diamonds, Spades ]
-
-data Card = Card CardValue Color
-  deriving (Show, Eq)
+  deriving (Show, Eq, Enum)
 
 softPoints :: Card -> Int
-softPoints (Card value _) = cardPoints $ value
+softPoints Ace = 11
+softPoints King = 10
+softPoints Queen = 10
+softPoints Jack = 10
+softPoints Ten = 10
+softPoints Nine = 9
+softPoints Eight = 8
+softPoints Seven = 7
+softPoints Six = 6
+softPoints Five = 5
+softPoints Four = 4
+softPoints Three = 3
+softPoints Two = 2
 
 hardPoints :: Card -> Int
-hardPoints (Card value _) = hardCardPoints $ value
+hardPoints Ace = 1
+hardPoints value = softPoints value
 
 data Deck = Deck [Card]
 

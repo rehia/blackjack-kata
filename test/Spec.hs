@@ -30,49 +30,49 @@ main = hspec $ do
       let hand = Hand mempty
       score hand `shouldBe` Hard 0
     it "should be hard 10 when only one King" $ do
-      let hand = Hand [Card King Hearts]
+      let hand = Hand [King]
       score hand `shouldBe` Hard 10
     it "should be hard 20 when one Queen and a Jack" $ do
-      let hand = Hand [Card Queen Hearts, Card Jack Hearts]
+      let hand = Hand [Queen, Jack]
       score hand `shouldBe` Hard 20
     it "should be a blackjack when 21" $ do
-      let hand = Hand [Card Queen Hearts, Card Nine Hearts, Card Two Hearts]
+      let hand = Hand [Queen, Nine, Two]
       score hand `shouldBe` BlackJack
     it "should be a busted when over 21" $ do
-      let hand = Hand [Card Queen Hearts, Card Jack Hearts, Card Two Hearts]
+      let hand = Hand [Queen, Jack, Two]
       score hand `shouldBe` Busted
     it "should be soft 11 when one ace" $ do
-      let hand = Hand [Card Ace Hearts]
+      let hand = Hand [Ace]
       score hand `shouldBe` Soft 11
     it "should be soft 20 when one ace and 9" $ do
-      let hand = Hand [Card Ace Hearts, Card Nine Hearts]
+      let hand = Hand [Ace, Nine]
       score hand `shouldBe` Soft 20
     it "should be hard 20 when one ace with king and nine" $ do
-      let hand = Hand [Card Ace Hearts, Card King Hearts, Card Nine Hearts]
+      let hand = Hand [Ace, King, Nine]
       score hand `shouldBe` Hard 20
   describe "determine winner" $ do
     it "player should win if has a better score than dealer" $ do
-      let player = Player . Hand $ [Card King Hearts, Card Queen Hearts]
-      let dealer = Dealer . Hand $ [Card King Hearts, Card Seven Hearts]
+      let player = Player . Hand $ [King, Queen]
+      let dealer = Dealer . Hand $ [King, Seven]
       let game = Game (Deck mempty) player dealer
       winner game `shouldBe` PlayerWins
     it "player should loose if busted" $ do
-      let player = Player . Hand $ [Card King Hearts, Card Queen Hearts, Card Two Hearts]
-      let dealer = Dealer . Hand $ [Card King Hearts, Card Seven Hearts]
+      let player = Player . Hand $ [King, Queen, Two]
+      let dealer = Dealer . Hand $ [King, Seven]
       let game = Game (Deck mempty) player dealer
       winner game `shouldBe` DealerWins
     it "player should loose if dealer has a better score" $ do
-      let player = Player . Hand $ [Card King Hearts]
-      let dealer = Dealer . Hand $ [Card King Hearts, Card Two Hearts]
+      let player = Player . Hand $ [King]
+      let dealer = Dealer . Hand $ [King, Two]
       let game = Game (Deck mempty) player dealer
       winner game `shouldBe` DealerWins
     it "no one should win if score are the same" $ do
-      let player = Player . Hand $ [Card King Hearts, Card Nine Hearts]
-      let dealer = Dealer . Hand $ [Card Jack Hearts, Card Seven Hearts, Card Two Hearts]
+      let player = Player . Hand $ [King, Nine]
+      let dealer = Dealer . Hand $ [Jack, Seven, Two]
       let game = Game (Deck mempty) player dealer
       winner game `shouldBe` NoOneWins
     it "player should loose if busted, even if dealer is busted" $ do
-      let player = Player . Hand $ [Card King Hearts, Card Queen Hearts, Card Two Hearts]
-      let dealer = Dealer . Hand $ [Card King Hearts, Card Queen Hearts, Card Two Hearts]
+      let player = Player . Hand $ [King, Queen, Two]
+      let dealer = Dealer . Hand $ [King, Queen, Two]
       let game = Game (Deck mempty) player dealer
       winner game `shouldBe` DealerWins

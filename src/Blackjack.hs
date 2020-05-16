@@ -6,7 +6,7 @@ initGame :: Game
 initGame = Game newDeck (Player . Hand $ mempty) (Dealer . Hand $ mempty)
 
 newDeck :: Deck
-newDeck = Deck $ [Card v c | v <- cardValues, c <- colors]
+newDeck = Deck $ replicate 4 =<< [Ace .. Two]
 
 dealCardToPlayer :: Game -> Game
 dealCardToPlayer (Game (Deck (card:deck)) (Player (Hand hand)) dealer) =
@@ -19,14 +19,12 @@ dealCardToDealer (Game (Deck (card:deck)) player (Dealer (Hand hand))) =
 score :: Hand -> Score
 score (Hand hand)
   | softResult == 21 = BlackJack
-  | any hasAce hand && softResult < 21 = Soft softResult
+  | Ace `elem` hand && softResult < 21 = Soft softResult
   | hardResult < 21 = Hard hardResult
   | otherwise   = Busted
   where
     softResult = sum $ softPoints <$> hand
     hardResult = sum $ hardPoints <$> hand
-    hasAce (Card Ace _) = True
-    hasAce _ = False
 
 winner :: Game -> Winner
 winner (Game _ (Player playerHand) (Dealer dealerHand))
