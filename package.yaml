@@ -37,6 +37,8 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - blackjack
+    - random-shuffle
+    - MonadRandom
 
 tests:
   blackjack-test:

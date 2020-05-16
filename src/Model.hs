@@ -36,6 +36,7 @@ hardPoints Ace = 1
 hardPoints value = softPoints value
 
 data Deck = Deck [Card]
+  deriving (Show, Eq)
 
 data Hand = Hand [Card]
   deriving (Show, Eq)
@@ -69,7 +70,7 @@ data Player = Player Hand
 data Dealer = Dealer Hand
   deriving (Show, Eq)
 
-data Game = Game Deck Player Dealer
+data Game = Game Player Dealer Deck
 
 data Winner
   = PlayerWins

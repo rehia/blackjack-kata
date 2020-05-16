@@ -1,28 +1,36 @@
 module Spec where
 
 import           Blackjack
+import           Control.Monad.Random (evalRand)
 import           Model
+import           System.Random        (getStdGen)
 import           Test.Hspec
 
 main :: IO ()
 main = hspec $ do
   describe "init game" $ do
     it "should initialize a game with a full deck" $ do
-      let Game (Deck deck) _ _ = initGame
+      g <- getStdGen
+      let Game _ _ (Deck deck) = evalRand initGame g
       length deck `shouldBe` 52
+      take 6 deck `shouldNotBe` [Ace, Ace, Ace, Ace, King, King]
     it "should initialize a player with an empty hand" $ do
-      let Game _ (Player (Hand hand)) _ = initGame
+      g <- getStdGen
+      let Game (Player (Hand hand)) _ _ = evalRand initGame g
       length hand `shouldBe` 0
     it "should initialize a dealer with an empty hand" $ do
-      let Game _ _ (Dealer (Hand hand)) = initGame
+      g <- getStdGen
+      let Game _ (Dealer (Hand hand)) _ = evalRand initGame g
       length hand `shouldBe` 0
   describe "deal a card" $ do
     it "should deal a card to player" $ do
-      let Game (Deck deck) (Player (Hand hand)) _ = dealCardToPlayer initGame
+      g <- getStdGen
+      let Game (Player (Hand hand)) _ (Deck deck) = dealCardToPlayer (evalRand initGame g)
       length deck `shouldBe` 51
       length hand `shouldBe` 1
     it "should deal a card to dealer" $ do
-      let Game (Deck deck) _ (Dealer (Hand hand)) = dealCardToDealer initGame
+      g <- getStdGen
+      let Game _ (Dealer (Hand hand)) (Deck deck) = dealCardToDealer (evalRand initGame g)
       length deck `shouldBe` 51
       length hand `shouldBe` 1
   describe "calculate hand score" $ do
@@ -54,25 +62,25 @@ main = hspec $ do
     it "player should win if has a better score than dealer" $ do
       let player = Player . Hand $ [King, Queen]
       let dealer = Dealer . Hand $ [King, Seven]
-      let game = Game (Deck mempty) player dealer
+      let game = Game player dealer (Deck mempty)
       winner game `shouldBe` PlayerWins
     it "player should loose if busted" $ do
       let player = Player . Hand $ [King, Queen, Two]
       let dealer = Dealer . Hand $ [King, Seven]
-      let game = Game (Deck mempty) player dealer
+      let game = Game player dealer (Deck mempty)
       winner game `shouldBe` DealerWins
     it "player should loose if dealer has a better score" $ do
       let player = Player . Hand $ [King]
       let dealer = Dealer . Hand $ [King, Two]
-      let game = Game (Deck mempty) player dealer
+      let game = Game player dealer (Deck mempty)
       winner game `shouldBe` DealerWins
     it "no one should win if score are the same" $ do
       let player = Player . Hand $ [King, Nine]
       let dealer = Dealer . Hand $ [Jack, Seven, Two]
-      let game = Game (Deck mempty) player dealer
+      let game = Game player dealer (Deck mempty)
       winner game `shouldBe` NoOneWins
     it "player should loose if busted, even if dealer is busted" $ do
       let player = Player . Hand $ [King, Queen, Two]
       let dealer = Dealer . Hand $ [King, Queen, Two]
-      let game = Game (Deck mempty) player dealer
+      let game = Game player dealer (Deck mempty)
       winner game `shouldBe` DealerWins

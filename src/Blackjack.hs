@@ -1,20 +1,26 @@
 module Blackjack where
 
 import           Model
+import Control.Monad.Random.Class (MonadRandom)
+import System.Random.Shuffle (shuffleM)
 
-initGame :: Game
-initGame = Game newDeck (Player . Hand $ mempty) (Dealer . Hand $ mempty)
+initGame :: MonadRandom m => m Game
+initGame = Game newPlayer newDealer <$> shuffleDeck newDeck
+  where
+    newPlayer = Player . Hand $ mempty
+    newDealer = Dealer . Hand $ mempty
+    newDeck = Deck $ replicate 4 =<< [Ace .. Two]
 
-newDeck :: Deck
-newDeck = Deck $ replicate 4 =<< [Ace .. Two]
+shuffleDeck :: MonadRandom m => Deck -> m Deck
+shuffleDeck (Deck deck) = Deck <$> shuffleM deck
 
 dealCardToPlayer :: Game -> Game
-dealCardToPlayer (Game (Deck (card:deck)) (Player (Hand hand)) dealer) =
-  Game (Deck deck) (Player . Hand $ (card:hand)) dealer
+dealCardToPlayer (Game (Player (Hand hand)) dealer (Deck (card:deck))) =
+  Game (Player . Hand $ (card:hand)) dealer (Deck deck)
 
 dealCardToDealer :: Game -> Game
-dealCardToDealer (Game (Deck (card:deck)) player (Dealer (Hand hand))) =
-  Game (Deck deck) player (Dealer . Hand $ (card:hand))
+dealCardToDealer (Game player (Dealer (Hand hand)) (Deck (card:deck))) =
+  Game player (Dealer . Hand $ (card:hand)) (Deck deck)
 
 score :: Hand -> Score
 score (Hand hand)
@@ -27,7 +33,7 @@ score (Hand hand)
     hardResult = sum $ hardPoints <$> hand
 
 winner :: Game -> Winner
-winner (Game _ (Player playerHand) (Dealer dealerHand))
+winner (Game (Player playerHand) (Dealer dealerHand) _)
   | playerScore == Busted = DealerWins
   | dealerScore == playerScore = NoOneWins
   | dealerScore > playerScore = DealerWins
