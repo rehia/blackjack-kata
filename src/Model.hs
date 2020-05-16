@@ -62,8 +62,14 @@ instance Ord Score where
   compare (Soft a) (Soft b) = compare a b
   compare (Hard a) (Soft b) = compare a b
   compare (Soft a) (Hard b) = compare a b
+  compare BlackJack BlackJack = EQ
   compare BlackJack (Hard _) = GT
   compare BlackJack (Soft _) = GT
+  compare (Soft _) BlackJack = LT
+  compare (Hard _) BlackJack = LT
+  compare _ Busted = GT
+  compare Busted _ = LT
+
 
 data Player = Player Hand
   deriving (Show, Eq)

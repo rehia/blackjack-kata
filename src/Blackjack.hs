@@ -15,10 +15,12 @@ shuffleDeck :: MonadRandom m => Deck -> m Deck
 shuffleDeck (Deck deck) = Deck <$> shuffleM deck
 
 dealCardToPlayer :: Game -> Game
+dealCardToPlayer (Game player dealer (Deck [])) = Game player dealer (Deck mempty)
 dealCardToPlayer (Game (Player (Hand hand)) dealer (Deck (card:deck))) =
   Game (Player . Hand $ (card:hand)) dealer (Deck deck)
 
 dealCardToDealer :: Game -> Game
+dealCardToDealer (Game player dealer (Deck [])) = Game player dealer (Deck mempty)
 dealCardToDealer (Game player (Dealer (Hand hand)) (Deck (card:deck))) =
   Game player (Dealer . Hand $ (card:hand)) (Deck deck)
 
